@@ -14,5 +14,9 @@ module YellowDaystar
         "proof": proof
       }
     end
+
+    def self.consume(json)
+      JSON::LD::API.expand(json)
+    end
   end
 end

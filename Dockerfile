@@ -11,4 +11,3 @@ WORKDIR /usr/src/app
 RUN gem build yellow_daystar.gemspec
 RUN gem install ./yellow_daystar-1.0.0.gem 
 RUN bundle install
-#RUN gem install verifiable_credential-1.0.0.gem
