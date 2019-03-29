@@ -1,7 +1,7 @@
 # yellow-daystar
 Ruby gem which implements verifiable credential data model spec
 
-## Docker
+## Example
 
 1. build the docker image:
 
