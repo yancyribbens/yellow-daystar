@@ -29,6 +29,7 @@ vc.produce(context: nil, id: nil, type: nil, credential_subject: nil, proof: nil
 
 ```
 require 'open-uri'
-credential  = open('https://raw.githubusercontent.com/w3c/vc-test-suite/gh-pages/test/vc-data-model-1.0/input/example-1.jsonld') {|f| f.read }
+example = 'https://raw.githubusercontent.com/w3c/vc-test-suite/gh-pages/test/vc-data-model-1.0/input/example-1.jsonld'
+credential  = open(example) {|f| f.read }
 vc.consume(JSON.parse(credential))
 ```
