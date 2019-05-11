@@ -14,7 +14,9 @@ Ruby gem which implements verifiable credential data model spec
 ```
   docker run -it yellow-daystar
   require 'yellow_daystar'
-  vc = YellowDaystar::VerifiableCredential
+  vc = YellowDaystar::VerifiableCredential.new(
+    [ { iri: 'https://www.w3.org/2018/credentials/examples/v1', path: 'example_context' } ]
+  )
 ```
 
 4. produce a credential:
