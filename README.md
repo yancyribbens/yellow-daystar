@@ -1,4 +1,4 @@
-# yellow-daystar
+# Omicron-Omicron-Alpha-Yellow-Daystar-2-7 (yellow-daystar for short)
 Ruby gem which implements verifiable credential data model spec
 
 ## Example
