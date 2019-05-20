@@ -32,7 +32,8 @@ module YellowDaystar
     end
     
     def validate(credential)
-      if credential[:@context].count < 2
+      context = credential[:@context]
+      if context.count < 2 || context.first != "https://www.w3.org/2018/credentials/v1"
         raise
       end
     end

@@ -6,8 +6,8 @@ class YellowDaystarTest < Minitest::Test
 	def sample_credential
     {
       "@context": [
-        "https://www.earth.org/",
-        "https://www.ganymede.net/"
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.utopiaplanitiafleet.net"
       ],
       "id": "http://example.edu/credentials/3732",
       "type": ["certifiably", "insane"],
@@ -41,6 +41,14 @@ class YellowDaystarTest < Minitest::Test
   def test_single_conext
     credential = sample_credential
     credential[:@context].pop
+    assert_raises do
+      out = @daystar.consume(credential)
+    end
+  end
+
+  def test_base_context
+    credential = sample_credential
+    credential[:@context] = ["http://bogusdata.com", "https://www.utopiaplanitiafleet.net"]
     assert_raises do
       out = @daystar.consume(credential)
     end
