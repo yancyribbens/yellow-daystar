@@ -4,22 +4,22 @@ require 'pry'
 
 class YellowDaystarTest < Minitest::Test
 	def sample_credential
-		{
-			"@context": [
-				"https://www.earth.org/",
-				"https://www.ganymede.net/"
-			],
-			"id": "http://example.edu/credentials/3732",
-			"type": ["certifiably", "insane"],
-			"issuer": "https://greymatter.edu/issuers/14",
-			"issuanceDate": "2010-01-01T19:23:24Z",
-			"credentialSubject": {
-				"id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-				"degree": {
-					"type": "UpgradeYourGreyMatter",
-					"name": "Because someday in may matter"
-				}
-			}
+    {
+      "@context": [
+        "https://www.earth.org/",
+        "https://www.ganymede.net/"
+      ],
+      "id": "http://example.edu/credentials/3732",
+      "type": ["certifiably", "insane"],
+      "issuer": "https://greymatter.edu/issuers/14",
+      "issuanceDate": "2010-01-01T19:23:24Z",
+      "credentialSubject": {
+        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "degree": {
+          "type": "UpgradeYourGreyMatter",
+          "name": "Because someday in may matter"
+        }
+      }
     }
 	end
 
