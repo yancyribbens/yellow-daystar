@@ -32,14 +32,14 @@ module YellowDaystar
     end
     
     def validate(credential)
-      if credential["@context"].count < 2
+      if credential[:@context].count < 2
         raise
       end
     end
 
     def consume(credential)
-      credential_hash = JSON.parse(credential)
-      validate(credential_hash)
+      validate(credential)
+      credential
     end
   end
 end

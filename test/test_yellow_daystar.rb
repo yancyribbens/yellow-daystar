@@ -35,14 +35,14 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_context
-    out = @daystar.consume(sample_credential.to_json)
+    out = @daystar.consume(sample_credential)
   end
 
   def test_single_conext
     credential = sample_credential
     credential[:@context].pop
     assert_raises do
-      out = @daystar.consume(credential.to_json)
+      out = @daystar.consume(credential)
     end
   end
 end
