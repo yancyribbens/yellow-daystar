@@ -30,10 +30,16 @@ module YellowDaystar
         "proof": proof
       }
     end
+    
+    def validate(credential)
+      if credential["@context"].count < 2
+        raise
+      end
+    end
 
-    def consume(json)
-      #JSON::LD::API.expand(json)
-      json
+    def consume(credential)
+      credential_hash = JSON.parse(credential)
+      validate(credential_hash)
     end
   end
 end
