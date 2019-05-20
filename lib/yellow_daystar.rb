@@ -9,10 +9,8 @@ module YellowDaystar
     ### [ { iri: 'https://www.w3.org/2018/credentials/examples/v1', path: 'example_context' } ]
 
     def initialize(contexts = [])
-      puts "init"
       base = JSON::LD::Context.new().parse('/usr/src/app/base_context')
       JSON::LD::Context.add_preloaded('https://www.w3.org/2018/credentials/v1', base)
-      puts "done loading base"
 
       #contexts.each do |context|
         #parsed_context = JSON::LD::Context.new().parse(context[:path])
@@ -34,7 +32,8 @@ module YellowDaystar
     end
 
     def consume(json)
-      JSON::LD::API.expand(json)
+      #JSON::LD::API.expand(json)
+      json
     end
   end
 end
