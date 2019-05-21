@@ -32,13 +32,14 @@ module YellowDaystar
     end
     
     def validate(credential)
-      context = credential[:@context]
-      if context.count < 2 || context.first != "https://www.w3.org/2018/credentials/v1"
+      context = credential["@context"]
+      if context.first != "https://www.w3.org/2018/credentials/v1"
         raise
       end
     end
 
     def consume(credential)
+      JSON::LD::API.expand(credential)
       validate(credential)
       credential
     end
