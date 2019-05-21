@@ -4,11 +4,19 @@ require 'webmock/minitest'
 require 'yellow_daystar'
 require 'pry'
 
+class ContextError < StandardError
+  def initialize(msg="My default message")
+    super
+  end
+end
+
 class YellowDaystarTest < Minitest::Test
+  BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
+
   def sample_credential
     {
       "@context": [
-        "https://www.w3.org/2018/credentials/v1",
+        BASE_CONTEXT,
         "https://www.utopiaplanitiafleet.net"
       ],
       "id": "http://example.edu/credentials/3732",
@@ -41,21 +49,43 @@ class YellowDaystarTest < Minitest::Test
     out = @daystar.consume(sample_credential)
   end
 
-  #TODO understand when a single context is not valid
-  #def test_single_conext
-    #credential = sample_credential
-    #credential["@context"].pop
-    #assert_raises do
-      #out = @daystar.consume(credential)
-    #end
-  #end
-
-  def test_base_context
+  def test_empty_conext
     credential = sample_credential
-    credential["@context"] = ["http://bogusdata.com", "https://www.utopiaplanitiafleet.net"]
-
-    assert_raises do
+  
+    credential["@context"] = []
+    e = assert_raises ContextError do
       out = @daystar.consume(credential)
     end
+    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  end
+
+  def test_wrong_first_conext
+    credential = sample_credential
+  
+    credential["@context"] = ['radical']
+    e = assert_raises ContextError do
+      out = @daystar.consume(credential)
+    end
+    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  end
+
+  def test_wrong_first_conext_with_second_base_context
+    credential = sample_credential
+  
+    credential["@context"] = ['radical', BASE_CONTEXT]
+    e = assert_raises ContextError do
+      out = @daystar.consume(credential)
+    end
+    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  end
+
+  def test_single_base_conext
+    credential = sample_credential
+  
+    credential["@context"] = [BASE_CONTEXT]
+    e = assert_raises ContextError do
+      out = @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing context"
   end
 end

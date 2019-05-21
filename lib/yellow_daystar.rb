@@ -1,7 +1,15 @@
 require 'json/ld'
 require 'pry'
 
+class ContextError < StandardError
+  def initialize(msg="My default message")
+    super
+  end
+end
+
 module YellowDaystar
+  BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
+
   class VerifiableCredential
 
     ### initialize() accepts an array of context hashes to cache
@@ -33,8 +41,11 @@ module YellowDaystar
     
     def validate(credential)
       context = credential["@context"]
-      if context.first != "https://www.w3.org/2018/credentials/v1"
-        raise
+      if context.first != BASE_CONTEXT
+        raise ContextError.new("first context must be #{BASE_CONTEXT}")
+      end
+      if context.length < 2
+        raise ContextError.new("Missing context")
       end
     end
 
