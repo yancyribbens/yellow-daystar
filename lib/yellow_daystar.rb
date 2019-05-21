@@ -9,8 +9,8 @@ module YellowDaystar
     ### [ { iri: 'https://www.w3.org/2018/credentials/examples/v1', path: 'example_context' } ]
 
     def initialize(contexts = [])
-      base = JSON::LD::Context.new().parse('/usr/src/app/base_context')
-      JSON::LD::Context.add_preloaded('https://www.w3.org/2018/credentials/v1', base)
+      #base = JSON::LD::Context.new().parse('/usr/src/app/base_context')
+      #JSON::LD::Context.add_preloaded('https://www.w3.org/2018/credentials/v1', base)
 
       #contexts.each do |context|
         #parsed_context = JSON::LD::Context.new().parse(context[:path])
