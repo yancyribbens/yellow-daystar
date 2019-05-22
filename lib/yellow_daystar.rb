@@ -72,8 +72,7 @@ module YellowDaystar
         rescue URI::InvalidURIError => e
           raise VerifiableCredentialParseError.new("Malformed issuer: #{e.message}")
         end
-      end
-      if !credential["issuer"]
+      else credential["issuer"]
         raise VerifiableCredentialParseError.new(
           "Missing issuer"
         )
