@@ -61,6 +61,23 @@ module YellowDaystar
           "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
         )
       end
+      if !credential["credentialSubject"]
+        raise VerifiableCredentialParseError.new(
+          "Missing credentialSubject"
+        )
+      end
+      if credential["issuer"]
+        begin
+          URI(credential["issuer"])
+        rescue URI::InvalidURIError => e
+          raise VerifiableCredentialParseError.new("Malformed issuer: #{e.message}")
+        end
+      end
+      if !credential["issuer"]
+        raise VerifiableCredentialParseError.new(
+          "Missing issuer"
+        )
+      end
     end
 
     def consume(credential)

@@ -119,4 +119,34 @@ class YellowDaystarTest < Minitest::Test
     end
     assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
+
+  def test_missing_subject
+    credential = sample_credential
+    credential.delete("credentialSubject")
+
+    e = assert_raises VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing credentialSubject"
+  end
+
+  def test_missing_issuer
+    credential = sample_credential
+    credential.delete("issuer")
+
+    e = assert_raises VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing issuer"
+  end
+
+  def test_bad_issuer
+    credential = sample_credential
+    credential["issuer"] = 'doctor evil'
+
+    e = assert_raises VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "Malformed issuer: bad URI(is not URI?): \"doctor evil\""
+  end
 end
