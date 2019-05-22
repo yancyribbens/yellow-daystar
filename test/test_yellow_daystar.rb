@@ -99,6 +99,16 @@ class YellowDaystarTest < Minitest::Test
       out = @daystar.consume(credential)
     end
     assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
+  end
 
+  def test_missing_type
+    credential = sample_credential
+
+    credential["type"] = ['SkysTheLimit']
+
+    e = assert_raises VerifiableCredentialParseError do
+      out = @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
 end
