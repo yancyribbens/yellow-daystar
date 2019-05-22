@@ -1,14 +1,15 @@
 require 'json/ld'
 require 'pry'
 
-class ContextError < StandardError
-  def initialize(msg="My default message")
+class VerifiableCredentialParseError < StandardError
+  def initialize(msg="Parse Error")
     super
   end
 end
 
 module YellowDaystar
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
+  VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
   class VerifiableCredential
 
@@ -41,11 +42,20 @@ module YellowDaystar
     
     def validate(credential)
       context = credential["@context"]
+      type = credential["type"]
+
       if context.first != BASE_CONTEXT
-        raise ContextError.new("first context must be #{BASE_CONTEXT}")
+        raise VerifiableCredentialParseError.new("first context must be #{BASE_CONTEXT}")
       end
       if context.length < 2
-        raise ContextError.new("Missing context")
+        raise VerifiableCredentialParseError.new("Missing context")
+      end
+      if type.first == VERIFIABLE_CREDENTIAL_TYPE
+        if type.length < 2
+          raise VerifiableCredentialParseError.new(
+            "Missing type. A VerifiableCredential must have a type."
+          )
+        end
       end
     end
 

@@ -4,7 +4,7 @@ require 'webmock/minitest'
 require 'yellow_daystar'
 require 'pry'
 
-class ContextError < StandardError
+class VerifiableCredentialParseError < StandardError
   def initialize(msg="My default message")
     super
   end
@@ -12,6 +12,7 @@ end
 
 class YellowDaystarTest < Minitest::Test
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
+  VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
   def sample_credential
     {
@@ -20,7 +21,7 @@ class YellowDaystarTest < Minitest::Test
         "https://www.utopiaplanitiafleet.net"
       ],
       "id": "http://example.edu/credentials/3732",
-      "type": ["certifiably", "insane"],
+      "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
       "issuer": "https://greymatter.edu/issuers/14",
       "issuanceDate": "2010-01-01T19:23:24Z",
       "credentialSubject": {
@@ -53,7 +54,7 @@ class YellowDaystarTest < Minitest::Test
     credential = sample_credential
   
     credential["@context"] = []
-    e = assert_raises ContextError do
+    e = assert_raises VerifiableCredentialParseError do
       out = @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
@@ -63,7 +64,7 @@ class YellowDaystarTest < Minitest::Test
     credential = sample_credential
   
     credential["@context"] = ['radical']
-    e = assert_raises ContextError do
+    e = assert_raises VerifiableCredentialParseError do
       out = @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
@@ -73,7 +74,7 @@ class YellowDaystarTest < Minitest::Test
     credential = sample_credential
   
     credential["@context"] = ['radical', BASE_CONTEXT]
-    e = assert_raises ContextError do
+    e = assert_raises VerifiableCredentialParseError do
       out = @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
@@ -83,9 +84,21 @@ class YellowDaystarTest < Minitest::Test
     credential = sample_credential
   
     credential["@context"] = [BASE_CONTEXT]
-    e = assert_raises ContextError do
+    e = assert_raises VerifiableCredentialParseError do
       out = @daystar.consume(credential)
     end
     assert_equal e.message, "Missing context"
+  end
+
+  def test_missing_type
+    credential = sample_credential
+
+    credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
+
+    e = assert_raises VerifiableCredentialParseError do
+      out = @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
+
   end
 end
