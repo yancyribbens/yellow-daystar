@@ -52,74 +52,70 @@ class YellowDaystarTest < Minitest::Test
 
   def test_empty_conext
     credential = sample_credential
-  
     credential["@context"] = []
+
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
 
   def test_wrong_first_conext
     credential = sample_credential
-  
     credential["@context"] = ['radical']
+
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
 
   def test_wrong_first_conext_with_second_base_context
     credential = sample_credential
-  
     credential["@context"] = ['radical', BASE_CONTEXT]
+
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
 
   def test_single_base_conext
     credential = sample_credential
-  
     credential["@context"] = [BASE_CONTEXT]
+
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "Missing context"
   end
 
   def test_missing_type
     credential = sample_credential
-
     credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
 
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
   end
 
   def test_missing_type_array
-
     credential = sample_credential
-
     credential["type"] = VERIFIABLE_CREDENTIAL_TYPE
 
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
 
   def test_missing_type
     credential = sample_credential
-
     credential["type"] = ['SkysTheLimit']
 
     e = assert_raises VerifiableCredentialParseError do
-      out = @daystar.consume(credential)
+      @daystar.consume(credential)
     end
     assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
