@@ -147,6 +147,26 @@ class YellowDaystarTest < Minitest::Test
     e = assert_raises VerifiableCredentialParseError do
       @daystar.consume(credential)
     end
-    assert_equal e.message, "Malformed issuer: bad URI(is not URI?): \"doctor evil\""
+    assert_equal e.message, "Malformed issuer: bad URI: doctor evil"
+  end
+
+  def test_missing_issuanceDate
+    credential = sample_credential
+    credential.delete("issuanceDate")
+
+    e = assert_raises VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing issuanceDate"
+  end
+
+  def test_issuenceDate_is_ISO8601
+    credential = sample_credential
+    credential["issuanceDate"] = "blue moon"
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "invalid date: blue moon"
   end
 end

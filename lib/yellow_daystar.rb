@@ -66,16 +66,25 @@ module YellowDaystar
           "Missing credentialSubject"
         )
       end
-      if credential["issuer"]
-        begin
-          URI(credential["issuer"])
-        rescue URI::InvalidURIError => e
-          raise VerifiableCredentialParseError.new("Malformed issuer: #{e.message}")
+      if issuer = credential["issuer"]
+        unless issuer =~ URI::regexp
+          raise VerifiableCredentialParseError.new("Malformed issuer: bad URI: #{issuer}")
         end
       else credential["issuer"]
         raise VerifiableCredentialParseError.new(
           "Missing issuer"
         )
+      end
+      if issue_date = credential["issuanceDate"]
+        begin
+          Time.iso8601(issue_date)
+        rescue ArgumentError => e
+          raise VerifiableCredentialParseError.new(
+            "invalid date: #{issue_date}"
+          )
+        end
+      else
+        raise VerifiableCredentialParseError.new("Missing issuanceDate")
       end
     end
 
