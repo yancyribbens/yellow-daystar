@@ -50,7 +50,7 @@ module YellowDaystar
       if context.length < 2
         raise VerifiableCredentialParseError.new("Missing context")
       end
-      if type.include? VERIFIABLE_CREDENTIAL_TYPE
+      if type.kind_of?(Array) && (type.include? VERIFIABLE_CREDENTIAL_TYPE)
         if type.length < 2
           raise VerifiableCredentialParseError.new(
             "Missing type. A VerifiableCredential must have a type."
