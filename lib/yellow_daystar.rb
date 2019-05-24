@@ -61,7 +61,10 @@ module YellowDaystar
           "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
         )
       end
-      if !credential["credentialSubject"]
+      if subject = credential["credentialSubject"]
+        #TODO
+        #credentil subject id must be a uri
+      else
         raise VerifiableCredentialParseError.new(
           "Missing credentialSubject"
         )
@@ -85,6 +88,15 @@ module YellowDaystar
         end
       else
         raise VerifiableCredentialParseError.new("Missing issuanceDate")
+      end
+      if expiration_date = credential["expirationDate"]
+        begin
+          Time.iso8601(expiration_date)
+        rescue ArgumentError => e
+          raise VerifiableCredentialParseError.new(
+            "invalid date: #{expiration_date}"
+          )
+        end
       end
     end
 

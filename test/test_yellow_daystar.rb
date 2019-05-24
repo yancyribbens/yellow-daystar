@@ -14,24 +14,34 @@ class YellowDaystarTest < Minitest::Test
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
+ def deep_transform_keys(hash)
+    result = {}
+    hash.each do |key, value|
+      result[key.to_s] = value.is_a?(Hash) ? deep_transform_keys(value) : value
+    end
+    result
+  end
+
   def sample_credential
-    {
-      "@context": [
-        BASE_CONTEXT,
-        "https://www.utopiaplanitiafleet.net"
-      ],
-      "id": "http://example.edu/credentials/3732",
-      "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
-      "issuer": "https://greymatter.edu/issuers/14",
-      "issuanceDate": "2010-01-01T19:23:24Z",
-      "credentialSubject": {
-        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-        "degree": {
-          "type": "UpgradeYourGreyMatter",
-          "name": "Because someday it may matter"
+    deep_transform_keys(
+      {
+        "@context": [
+          BASE_CONTEXT,
+          "https://www.utopiaplanitiafleet.net"
+        ],
+        "id": "http://example.edu/credentials/3732",
+        "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
+        "issuer": "https://greymatter.edu/issuers/14",
+        "issuanceDate": "2010-01-01T19:23:24Z",
+        "credentialSubject": {
+          "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+          "degree": {
+            "type": "UpgradeYourGreyMatter",
+            "name": "Because someday it may matter"
+          }
         }
       }
-    }.inject({}){|memo,(k,v)| memo[k.to_s] = v; memo}
+    )
   end
 
   def setup
@@ -47,7 +57,8 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_context
-    out = @daystar.consume(sample_credential)
+    consumed_credential = @daystar.consume(sample_credential)
+    assert_equal consumed_credential, sample_credential
   end
 
   def test_empty_conext
@@ -169,4 +180,35 @@ class YellowDaystarTest < Minitest::Test
     end
     assert_equal e.message, "invalid date: blue moon"
   end
+
+  def test_expirationDate_is_ISO8601
+    credential = sample_credential
+    credential["expirationDate"]= "full moon"
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "invalid date: full moon"
+  end
+
+  def test_credentialSubject
+    credential = sample_credential
+    credential.delete("credentialSubject")
+
+    e = assert_raises VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "Missing credentialSubject"
+  end
+
+  #def test_credentialSubject
+    #credential = sample_credential
+    #credential["credentialSubject"] = {"id"=>"cookie_monster"}
+    #binding.pry
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@daystar.consume(credential)
+    #end
+    #assert_equal e.message, "credentialSubject must include one or more proporites"
+  #end
 end
