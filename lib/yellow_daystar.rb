@@ -98,6 +98,15 @@ module YellowDaystar
           )
         end
       end
+      if status = credential["credentialStatus"]
+        ["type", "id"].each do |required|
+          unless status.key?(required)
+            raise VerifiableCredentialParseError.new(
+              "CredentialStatus must include a #{required}"
+            )
+          end
+        end
+      end
     end
 
     def consume(credential)

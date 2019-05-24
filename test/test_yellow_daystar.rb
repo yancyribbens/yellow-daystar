@@ -39,6 +39,10 @@ class YellowDaystarTest < Minitest::Test
             "type": "UpgradeYourGreyMatter",
             "name": "Because someday it may matter"
           }
+        },
+        "credentialStatus": {
+          "id": "https://example.edu/status/24",
+          "type": "CredentialStatusList2017"
         }
       }
     )
@@ -201,14 +205,23 @@ class YellowDaystarTest < Minitest::Test
     assert_equal e.message, "Missing credentialSubject"
   end
 
-  #def test_credentialSubject
-    #credential = sample_credential
-    #credential["credentialSubject"] = {"id"=>"cookie_monster"}
-    #binding.pry
+  def test_credentialStatus_type
+    credential = sample_credential
+    credential["credentialStatus"].delete("type")
 
-    #e = assert_raises  VerifiableCredentialParseError do
-      #@daystar.consume(credential)
-    #end
-    #assert_equal e.message, "credentialSubject must include one or more proporites"
-  #end
+    e = assert_raises  VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "CredentialStatus must include a type"
+  end
+
+  def test_credentialStatus_id
+    credential = sample_credential
+    credential["credentialStatus"].delete("id")
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @daystar.consume(credential)
+    end
+    assert_equal e.message, "CredentialStatus must include a id"
+  end
 end
