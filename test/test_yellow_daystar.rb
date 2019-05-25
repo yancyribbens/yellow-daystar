@@ -3,6 +3,7 @@ require 'mocha/minitest'
 require 'webmock/minitest'
 require 'yellow_daystar'
 require 'pry'
+require 'hash_validator'
 
 class VerifiableCredentialParseError < StandardError
   def initialize(msg="My default message")
