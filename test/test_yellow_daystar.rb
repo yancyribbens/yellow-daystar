@@ -4,9 +4,6 @@ require 'webmock/minitest'
 require 'yellow_daystar'
 require 'pry'
 
-# todo simplify validation, possibly with grammer
-require 'hash_validator'
-
 class VerifiableCredentialParseError < StandardError
   def initialize(msg="My default message")
     super

@@ -1,6 +1,8 @@
 require 'json/ld'
 require 'pry'
 
+#TODO simplify validation, possibly with grammer or another gem
+
 class VerifiableCredentialParseError < StandardError
   def initialize(msg="Parse Error")
     super
