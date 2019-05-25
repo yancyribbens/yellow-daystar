@@ -7,9 +7,48 @@ class VerifiableCredentialParseError < StandardError
   end
 end
 
+
+class VerifiablePresentationParseError < StandardError
+  def initialize(msg="Parse Error")
+    super
+  end
+end
+
 module YellowDaystar
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
+
+  class VerifiablePresentation
+
+    ### initialize() accepts an array of context hashes to cache
+    ### example:
+    ### [ { iri: 'https://www.w3.org/2018/credentials/examples/v1', path: 'example_context' } ]
+
+    def initialize(contexts = [])
+      #base = JSON::LD::Context.new().parse('/usr/src/app/base_context')
+      #JSON::LD::Context.add_preloaded('https://www.w3.org/2018/credentials/v1', base)
+
+      #contexts.each do |context|
+        #parsed_context = JSON::LD::Context.new().parse(context[:path])
+        #JSON::LD::Context.add_preloaded(context[:iri], parsed_context)
+      #end
+    end
+
+    def validate(presentation)
+      unless subject = presentation["verifiableCredential"]
+        raise VerifiablePresentationParseError.new("Missing VerifiablePresentation")
+      end
+      unless subject = presentation["proof"]
+        raise VerifiablePresentationParseError.new("Missing proof")
+      end
+    end
+
+    def consume(presentation)
+      JSON::LD::API.expand(presentation)
+      validate(presentation)
+      presentation
+    end
+  end
 
   class VerifiableCredential
 

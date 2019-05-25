@@ -14,7 +14,7 @@ class YellowDaystarTest < Minitest::Test
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
- def deep_transform_keys(hash)
+  def deep_transform_keys(hash)
     result = {}
     hash.each do |key, value|
       result[key.to_s] = value.is_a?(Hash) ? deep_transform_keys(value) : value
@@ -22,12 +22,44 @@ class YellowDaystarTest < Minitest::Test
     result
   end
 
+  def sample_presentation
+    deep_transform_keys(
+      {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://www.w3.org/2018/credentials/examples/v1"
+        ],
+        "id": "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
+        "type": ["VerifiablePresentation", "CredentialManagerPresentation"],
+        "verifiableCredential": [{
+          "id": "http://example.edu/credentials/3732",
+          "type": ["VerifiableCredential", "UniversityDegreeCredential"],
+          "issuer": "https://example.edu/issuers/14",
+          "issuanceDate": "2010-01-01T19:23:24Z",
+          "credentialSubject": {
+            "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+            "degree": {
+              "type": "BachelorDegree",
+              "name": "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>"
+            }
+          },
+          "proof": [{
+            "type": "example"
+          }]
+        }],
+        "proof": [{
+          "type": "example"
+        }]
+      }
+    )
+  end
+
   def sample_credential
     deep_transform_keys(
       {
         "@context": [
           BASE_CONTEXT,
-          "https://www.utopiaplanitiafleet.net"
+         "https://www.utopiaplanitiafleet.net"
         ],
         "id": "http://example.edu/credentials/3732",
         "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
@@ -50,19 +82,25 @@ class YellowDaystarTest < Minitest::Test
 
   def setup
     JSON::LD::API.stubs(:expand)
-    @daystar = YellowDaystar::VerifiableCredential.new
+    @vc = YellowDaystar::VerifiableCredential.new
+    @vp = YellowDaystar::VerifiablePresentation.new
   end
 
   def test_empty
     data = {}
     assert_raises do
-      out = @daystar.consume(data)
+      out = @vc.consume(data)
     end
   end
 
-  def test_context
-    consumed_credential = @daystar.consume(sample_credential)
+  def test_verifiable_credential_not_mangled
+    consumed_credential = @vc.consume(sample_credential)
     assert_equal consumed_credential, sample_credential
+  end
+
+  def test_verifiable_presentation_not_mangled
+    consumed_presentation = @vp.consume(sample_presentation)
+    assert_equal consumed_presentation, sample_presentation
   end
 
   def test_empty_conext
@@ -70,7 +108,7 @@ class YellowDaystarTest < Minitest::Test
     credential["@context"] = []
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
@@ -80,7 +118,7 @@ class YellowDaystarTest < Minitest::Test
     credential["@context"] = ['radical']
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
@@ -90,7 +128,7 @@ class YellowDaystarTest < Minitest::Test
     credential["@context"] = ['radical', BASE_CONTEXT]
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
@@ -100,7 +138,7 @@ class YellowDaystarTest < Minitest::Test
     credential["@context"] = [BASE_CONTEXT]
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing context"
   end
@@ -110,7 +148,7 @@ class YellowDaystarTest < Minitest::Test
     credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
   end
@@ -120,7 +158,7 @@ class YellowDaystarTest < Minitest::Test
     credential["type"] = VERIFIABLE_CREDENTIAL_TYPE
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
@@ -130,7 +168,7 @@ class YellowDaystarTest < Minitest::Test
     credential["type"] = ['SkysTheLimit']
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
   end
@@ -140,7 +178,7 @@ class YellowDaystarTest < Minitest::Test
     credential.delete("credentialSubject")
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing credentialSubject"
   end
@@ -150,7 +188,7 @@ class YellowDaystarTest < Minitest::Test
     credential.delete("issuer")
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing issuer"
   end
@@ -160,7 +198,7 @@ class YellowDaystarTest < Minitest::Test
     credential["issuer"] = 'doctor evil'
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Malformed issuer: bad URI: doctor evil"
   end
@@ -170,7 +208,7 @@ class YellowDaystarTest < Minitest::Test
     credential.delete("issuanceDate")
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing issuanceDate"
   end
@@ -180,7 +218,7 @@ class YellowDaystarTest < Minitest::Test
     credential["issuanceDate"] = "blue moon"
 
     e = assert_raises  VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "invalid date: blue moon"
   end
@@ -190,7 +228,7 @@ class YellowDaystarTest < Minitest::Test
     credential["expirationDate"]= "full moon"
 
     e = assert_raises  VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "invalid date: full moon"
   end
@@ -200,7 +238,7 @@ class YellowDaystarTest < Minitest::Test
     credential.delete("credentialSubject")
 
     e = assert_raises VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "Missing credentialSubject"
   end
@@ -210,7 +248,7 @@ class YellowDaystarTest < Minitest::Test
     credential["credentialStatus"].delete("type")
 
     e = assert_raises  VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "CredentialStatus must include a type"
   end
@@ -220,8 +258,28 @@ class YellowDaystarTest < Minitest::Test
     credential["credentialStatus"].delete("id")
 
     e = assert_raises  VerifiableCredentialParseError do
-      @daystar.consume(credential)
+      @vc.consume(credential)
     end
     assert_equal e.message, "CredentialStatus must include a id"
+  end
+
+  def test_verifiable_presentation_missing_verifiable_credential
+    presentation = sample_presentation
+    presentation.delete("verifiableCredential")
+
+    e = assert_raises VerifiablePresentationParseError do
+      @vp.consume(presentation)
+    end
+    assert_equal e.message, "Missing VerifiablePresentation"
+  end
+
+  def test_verifiable_presentation_missing_proof
+    presentation = sample_presentation
+    presentation.delete("proof")
+
+    e = assert_raises VerifiablePresentationParseError do
+      @vp.consume(presentation)
+    end
+    assert_equal e.message, "Missing proof"
   end
 end

@@ -13,7 +13,11 @@ else
     out = vc.consume(data)
     puts JSON.pretty_generate(out)
   else ARGV.include?('--presentation')
-    puts "presentation TODO"
+    vc = YellowDaystar::VerifiablePresentation.new(
+     [ { iri: 'https://www.w3.org/2018/credentials/examples/v1', path: 'example_context' } ]
+    )
+    out = vc.consume(data)
+    puts JSON.pretty_generate(out)
   end
 end
 
