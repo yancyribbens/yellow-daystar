@@ -2,7 +2,7 @@ FROM ruby:2.6.2
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        postgresql-client vim\
+        postgresql-client vim libsodium-dev\
     && rm -rf /var/lib/apt/lists/*
 
 ### dev tool
