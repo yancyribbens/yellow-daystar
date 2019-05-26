@@ -148,6 +148,15 @@ module YellowDaystar
           end
         end
       end
+      if proof = credential["proof"]
+        unless proof["type"]
+          raise VerifiableCredentialParseError.new(
+            "Missing proof type"
+          )
+        end
+      else
+        raise VerifiableCredentialParseError.new("Missing proof")
+      end
     end
 
     def consume(credential)

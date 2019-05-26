@@ -75,6 +75,13 @@ class YellowDaystarTest < Minitest::Test
         "credentialStatus": {
           "id": "https://example.edu/status/24",
           "type": "CredentialStatusList2017"
+        },
+        "proof": {
+          "type": "RsaSignature2018",
+          "created": "2017-06-18T21:19:10Z",
+          "proofPurpose": "assertionMethod",
+          "verificationMethod": "https://example.com/jdoe/keys/1",
+          "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yA"
         }
       }
     )
@@ -103,7 +110,7 @@ class YellowDaystarTest < Minitest::Test
     assert_equal consumed_presentation, sample_presentation
   end
 
-  def test_empty_conext
+  def test_empty_context
     credential = sample_credential
     credential["@context"] = []
 
@@ -113,7 +120,7 @@ class YellowDaystarTest < Minitest::Test
     assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
   end
 
-  def test_wrong_first_conext
+  def test_wrong_first_context
     credential = sample_credential
     credential["@context"] = ['radical']
 
@@ -146,6 +153,7 @@ class YellowDaystarTest < Minitest::Test
   def test_missing_type
     credential = sample_credential
     credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
+    binding.pry
 
     e = assert_raises VerifiableCredentialParseError do
       @vc.consume(credential)
@@ -261,6 +269,27 @@ class YellowDaystarTest < Minitest::Test
       @vc.consume(credential)
     end
     assert_equal e.message, "CredentialStatus must include a id"
+  end
+
+  def test_verifiable_credential_missing_proof
+    credential = sample_credential
+    credential.delete("proof")
+
+    e = assert_raises VerifiableCredentialParseError do
+      @vc.consume(credential)
+    end
+    assert_equal e.message, "Missing proof"
+  end
+
+  def test_verifiable_credential_proof_missing_type
+    credential = sample_credential
+    credential["proof"].delete("type")
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @vc.consume(credential)
+    end
+
+    assert_equal e.message, "Missing proof type"
   end
 
   def test_verifiable_presentation_missing_verifiable_credential
