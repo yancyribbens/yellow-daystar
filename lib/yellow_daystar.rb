@@ -18,6 +18,7 @@ end
 
 module YellowDaystar
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
+  DEPRECATED_CONTEXT = "https://raw.githubusercontent.com/w3c/vc-data-model/24cf5e97e1a41786e9e4dbfa4f9f264c4c41e537/contexts/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
   class VerifiablePresentation
@@ -85,7 +86,7 @@ module YellowDaystar
       context = credential["@context"]
       type = credential["type"]
 
-      if context.first != BASE_CONTEXT
+      if context.first != BASE_CONTEXT && context.first != DEPRECATED_CONTEXT
         raise VerifiableCredentialParseError.new("first context must be #{BASE_CONTEXT}")
       end
       if context.length < 2
