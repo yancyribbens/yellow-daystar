@@ -4,12 +4,6 @@ require 'webmock/minitest'
 require 'yellow_daystar'
 require 'pry'
 
-class VerifiableCredentialParseError < StandardError
-  def initialize(msg="My default message")
-    super
-  end
-end
-
 class YellowDaystarTest < Minitest::Test
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
