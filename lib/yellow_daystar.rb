@@ -1,8 +1,10 @@
 require 'json/ld'
 require 'pry'
 
-#TODO simplify validation, possibly with grammer or another gem
+#TODO simplify validation, possibly with grammer or another gem or json-ld schema
 
+#TODO subclass these so that the parent class is the same and the child class bubles
+# exception information specific to the exception
 class VerifiableCredentialParseError < StandardError
   def initialize(msg="Parse Error")
     super
