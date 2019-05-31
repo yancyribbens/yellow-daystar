@@ -80,6 +80,9 @@ class YellowDaystarTest < Minitest::Test
       }
     )
   end
+	
+	def sample_jws
+	end
 
   def setup
     JSON::LD::API.stubs(:expand)
@@ -87,222 +90,242 @@ class YellowDaystarTest < Minitest::Test
     @vp = YellowDaystar::VerifiablePresentation.new
   end
 
-  def test_empty
-    data = {}
-    assert_raises do
-      out = @vc.consume(data)
-    end
-  end
+  #def test_empty
+    #data = {}
+    #assert_raises do
+      #out = @vc.consume(data)
+    #end
+  #end
 
-  def test_verifiable_credential_not_mangled
-    consumed_credential = @vc.consume(sample_credential)
-    assert_equal consumed_credential, sample_credential
-  end
+  #def test_verifiable_credential_not_mangled
+    #consumed_credential = @vc.consume(sample_credential)
+    #assert_equal consumed_credential, sample_credential
+  #end
 
-  def test_verifiable_presentation_not_mangled
-    consumed_presentation = @vp.consume(sample_presentation)
-    assert_equal consumed_presentation, sample_presentation
-  end
+  #def test_verifiable_presentation_not_mangled
+    #consumed_presentation = @vp.consume(sample_presentation)
+    #assert_equal consumed_presentation, sample_presentation
+  #end
 
-  def test_empty_context
+  #def test_empty_context
+    #credential = sample_credential
+    #credential["@context"] = []
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  #end
+
+  #def test_wrong_first_context
+    #credential = sample_credential
+    #credential["@context"] = ['radical']
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  #end
+
+  #def test_wrong_first_conext_with_second_base_context
+    #credential = sample_credential
+    #credential["@context"] = ['radical', BASE_CONTEXT]
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
+  #end
+
+  #def test_single_base_conext
+    #credential = sample_credential
+    #credential["@context"] = [BASE_CONTEXT]
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing context"
+  #end
+
+  #def test_missing_type
+    #credential = sample_credential
+    #credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
+    #binding.pry
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
+  #end
+
+  #def test_missing_type_array
+    #credential = sample_credential
+    #credential["type"] = VERIFIABLE_CREDENTIAL_TYPE
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
+  #end
+
+  #def test_missing_type
+    #credential = sample_credential
+    #credential["type"] = ['SkysTheLimit']
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
+  #end
+
+  #def test_missing_subject
+    #credential = sample_credential
+    #credential.delete("credentialSubject")
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing credentialSubject"
+  #end
+
+  #def test_missing_issuer
+    #credential = sample_credential
+    #credential.delete("issuer")
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing issuer"
+  #end
+
+  #def test_bad_issuer
+    #credential = sample_credential
+    #credential["issuer"] = 'doctor evil'
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Malformed issuer: bad URI: doctor evil"
+  #end
+
+  #def test_missing_issuanceDate
+    #credential = sample_credential
+    #credential.delete("issuanceDate")
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing issuanceDate"
+  #end
+
+  #def test_issuenceDate_is_ISO8601
+    #credential = sample_credential
+    #credential["issuanceDate"] = "blue moon"
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "invalid date: blue moon"
+  #end
+
+  #def test_expirationDate_is_ISO8601
+    #credential = sample_credential
+    #credential["expirationDate"]= "full moon"
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "invalid date: full moon"
+  #end
+
+  #def test_credentialSubject
+    #credential = sample_credential
+    #credential.delete("credentialSubject")
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing credentialSubject"
+  #end
+
+  #def test_credentialStatus_type
+    #credential = sample_credential
+    #credential["credentialStatus"].delete("type")
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "CredentialStatus must include a type"
+  #end
+
+  #def test_credentialStatus_id
+    #credential = sample_credential
+    #credential["credentialStatus"].delete("id")
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "CredentialStatus must include a id"
+  #end
+
+  #def test_verifiable_credential_missing_proof
+    #credential = sample_credential
+    #credential.delete("proof")
+
+    #e = assert_raises VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+    #assert_equal e.message, "Missing proof"
+  #end
+
+  #def test_verifiable_credential_proof_missing_type
+    #credential = sample_credential
+    #credential["proof"].delete("type")
+
+    #e = assert_raises  VerifiableCredentialParseError do
+      #@vc.consume(credential)
+    #end
+
+    #assert_equal e.message, "Missing proof type"
+  #end
+
+  #def test_verifiable_presentation_missing_verifiable_credential
+    #presentation = sample_presentation
+    #presentation.delete("verifiableCredential")
+
+    #e = assert_raises VerifiablePresentationParseError do
+      #@vp.consume(presentation)
+    #end
+    #assert_equal e.message, "Missing VerifiablePresentation"
+  #end
+
+  #def test_verifiable_presentation_missing_proof
+    #presentation = sample_presentation
+    #presentation.delete("proof")
+
+    #e = assert_raises VerifiablePresentationParseError do
+      #@vp.consume(presentation)
+    #end
+    #assert_equal e.message, "Missing proof"
+  #end
+
+  # producer tests
+
+  def test_attach_proof
     credential = sample_credential
-    credential["@context"] = []
 
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
-  end
+		binding.pry
 
-  def test_wrong_first_context
-    credential = sample_credential
-    credential["@context"] = ['radical']
+  #"proof": [{
+    #"type": "ED25519",
+    #"created": "2018-06-18T21:19:10Z",
+    #"proofPurpose": "authentication",
+    #"verificationMethod": "did:example:76e12ec21ebhyu1f712ebc6f1z2/keys/2",
+    #"challenge": "c0ae1c8e-c7e7-469f-b252-86e6a0e7387e",
+    #"jws": "BavEll0/I1..W3JT24="
+  #}]
 
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
-  end
-
-  def test_wrong_first_conext_with_second_base_context
-    credential = sample_credential
-    credential["@context"] = ['radical', BASE_CONTEXT]
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "first context must be https://www.w3.org/2018/credentials/v1"
-  end
-
-  def test_single_base_conext
-    credential = sample_credential
-    credential["@context"] = [BASE_CONTEXT]
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing context"
-  end
-
-  def test_missing_type
-    credential = sample_credential
-    credential["type"] = [VERIFIABLE_CREDENTIAL_TYPE]
-    binding.pry
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing type. A VerifiableCredential must have a type."
-  end
-
-  def test_missing_type_array
-    credential = sample_credential
-    credential["type"] = VERIFIABLE_CREDENTIAL_TYPE
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
-  end
-
-  def test_missing_type
-    credential = sample_credential
-    credential["type"] = ['SkysTheLimit']
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing type. A Verifiable Credential must have a type of VerifiableCredential"
-  end
-
-  def test_missing_subject
-    credential = sample_credential
-    credential.delete("credentialSubject")
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing credentialSubject"
-  end
-
-  def test_missing_issuer
-    credential = sample_credential
-    credential.delete("issuer")
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing issuer"
-  end
-
-  def test_bad_issuer
-    credential = sample_credential
-    credential["issuer"] = 'doctor evil'
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Malformed issuer: bad URI: doctor evil"
-  end
-
-  def test_missing_issuanceDate
-    credential = sample_credential
-    credential.delete("issuanceDate")
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing issuanceDate"
-  end
-
-  def test_issuenceDate_is_ISO8601
-    credential = sample_credential
-    credential["issuanceDate"] = "blue moon"
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "invalid date: blue moon"
-  end
-
-  def test_expirationDate_is_ISO8601
-    credential = sample_credential
-    credential["expirationDate"]= "full moon"
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "invalid date: full moon"
-  end
-
-  def test_credentialSubject
-    credential = sample_credential
-    credential.delete("credentialSubject")
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing credentialSubject"
-  end
-
-  def test_credentialStatus_type
-    credential = sample_credential
-    credential["credentialStatus"].delete("type")
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "CredentialStatus must include a type"
-  end
-
-  def test_credentialStatus_id
-    credential = sample_credential
-    credential["credentialStatus"].delete("id")
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "CredentialStatus must include a id"
-  end
-
-  def test_verifiable_credential_missing_proof
-    credential = sample_credential
-    credential.delete("proof")
-
-    e = assert_raises VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-    assert_equal e.message, "Missing proof"
-  end
-
-  def test_verifiable_credential_proof_missing_type
-    credential = sample_credential
-    credential["proof"].delete("type")
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-
-    assert_equal e.message, "Missing proof type"
-  end
-
-  def test_verifiable_presentation_missing_verifiable_credential
-    presentation = sample_presentation
-    presentation.delete("verifiableCredential")
-
-    e = assert_raises VerifiablePresentationParseError do
-      @vp.consume(presentation)
-    end
-    assert_equal e.message, "Missing VerifiablePresentation"
-  end
-
-  def test_verifiable_presentation_missing_proof
-    presentation = sample_presentation
-    presentation.delete("proof")
-
-    e = assert_raises VerifiablePresentationParseError do
-      @vp.consume(presentation)
-    end
-    assert_equal e.message, "Missing proof"
+    RbNaCl::Random.stubs('random_bytes').returns('Omicron-Omicron-Alpha-Yellow-Day')
+    @vc.consume(credential)
   end
 end
