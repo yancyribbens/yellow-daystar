@@ -320,5 +320,9 @@ class YellowDaystarTest < Minitest::Test
     RbNaCl::Random.stubs('random_bytes').returns('OmicronOmicronAlphaYellowDaystar')
     signed_credential = @vc.sign(credential)
     assert_equal sample_signed_credential, signed_credential
+
+    proof = signed_credential.delete("proof")
+    cred = @vc.verify(proof, 'OmicronOmicronAlphaYellowDaystar')
+    assert_equal cred.first, credential
   end
 end

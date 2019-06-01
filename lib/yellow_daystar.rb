@@ -86,6 +86,14 @@ module YellowDaystar
       credential.merge("proof" => proof)
     end
 
+    def verify(proof, key)
+      jws = proof[:jws] 
+      pub_key = proof[:public_key]
+      private_key = RbNaCl::Signatures::Ed25519::SigningKey.new(key)
+      raise 'invalid pub key' if pub_key != private_key.verify_key.to_s
+      JWT.decode jws, private_key.verify_key, true, { algorithm: 'ED25519' }
+    end
+
     def produce(context:, id:, type:, credential_subject:, proof:)
       {
         "@context": [
