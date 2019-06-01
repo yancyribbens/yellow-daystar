@@ -1,5 +1,6 @@
 require 'json/ld'
 require 'pry'
+require 'rbnacl'
 
 #TODO simplify validation, possibly with grammer or another gem or json-ld schema
 
@@ -69,6 +70,20 @@ module YellowDaystar
         #parsed_context = JSON::LD::Context.new().parse(context[:path])
         #JSON::LD::Context.add_preloaded(context[:iri], parsed_context)
       #end
+    end
+
+    def sign(credential)
+      private_key = RbNaCl::Signatures::Ed25519::SigningKey.new(RbNaCl::Random.random_bytes(32))
+      public_key = private_key.verify_key
+      token = JWT.encode credential, private_key, 'ED25519'
+      proof = {
+        "type": "ED25519",
+        "created": "2017-06-18T21:19:10Z",
+        "proofPurpose": "assertionMethod",
+        "public_key": public_key.to_s,
+        "jws": token
+      }
+      credential.merge("proof" => proof)
     end
 
     def produce(context:, id:, type:, credential_subject:, proof:)
@@ -165,6 +180,7 @@ module YellowDaystar
     def consume(credential)
       JSON::LD::API.expand(credential)
       validate(credential)
+      #attach_proof(credential)
       credential
     end
   end
