@@ -327,6 +327,26 @@ class YellowDaystarTest < Minitest::Test
     assert_equal e.message, "Missing credentialSchema"
   end
 
+  def test_verifiable_credential_zkp_missing_credential_schema_id
+    credential = sample_credential
+    credential["credentialSchema"].delete("id")
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @vc.consume(credential)
+    end
+    assert_equal e.message, "Missing credentialSchema id"
+  end
+
+  def test_verifiable_credential_zkp_missing_credential_schema_type
+    credential = sample_credential
+    credential["credentialSchema"].delete("type")
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @vc.consume(credential)
+    end
+    assert_equal e.message, "Missing credentialSchema type"
+  end
+
   def test_attach_proof
     credential = sample_credential
     credential.delete("proof")
