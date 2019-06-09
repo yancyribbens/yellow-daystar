@@ -183,6 +183,14 @@ module YellowDaystar
       else
         raise VerifiableCredentialParseError.new("Missing proof")
       end
+      unless credential["credentialSchema"]
+        raise VerifiableCredentialParseError.new("Missing credentialSchema")
+      end
+        #raise VerifiableCredentialParseError.new(
+          #"Missing credentialSchema"
+          #)
+        #end
+      #end
     end
 
     def consume(credential)
