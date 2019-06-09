@@ -85,7 +85,7 @@ class YellowDaystarTest < Minitest::Test
   def sample_signed_credential
     private_key = RbNaCl::Signatures::Ed25519::SigningKey.new('OmicronOmicronAlphaYellowDaystar')
     credential = sample_credential
-    token = File.read('token').delete!("\n")
+    token = File.read('token')
     proof = {
       "type": "ED25519",
       "created": "2017-06-18T21:19:10Z",
