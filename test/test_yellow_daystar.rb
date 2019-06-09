@@ -58,6 +58,10 @@ class YellowDaystarTest < Minitest::Test
         ],
         "id": "http://example.edu/credentials/3732",
         "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
+        "credentialSchema": {
+          "id": "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
+          "type": "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+        },
         "issuer": "https://greymatter.edu/issuers/14",
         "issuanceDate": "2010-01-01T19:23:24Z",
         "credentialSubject": {
@@ -311,6 +315,9 @@ class YellowDaystarTest < Minitest::Test
       @vp.consume(presentation)
     end
     assert_equal e.message, "Missing proof"
+  end
+
+  def test_verifiable_credential_zkp_missing_credential_schema
   end
 
   def test_attach_proof
