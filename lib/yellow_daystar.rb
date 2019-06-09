@@ -186,17 +186,11 @@ module YellowDaystar
       unless credential["credentialSchema"]
         raise VerifiableCredentialParseError.new("Missing credentialSchema")
       end
-        #raise VerifiableCredentialParseError.new(
-          #"Missing credentialSchema"
-          #)
-        #end
-      #end
     end
 
     def consume(credential)
       JSON::LD::API.expand(credential)
       validate(credential)
-      #attach_proof(credential)
       credential
     end
   end
