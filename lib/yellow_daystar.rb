@@ -184,9 +184,19 @@ module YellowDaystar
         raise VerifiableCredentialParseError.new("Missing proof")
       end
       if credential_schema = credential["credentialSchema"]
-        ["id", "type"].each do |property|
-          unless credential_schema[property]
-            raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
+        if credential_schema.kind_of?(Array)
+          credential_schema.each do |item|
+            ["id", "type"].each do |property|
+              unless item[property]
+                raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
+              end
+            end
+          end
+        else
+          ["id", "type"].each do |property|
+            unless credential_schema[property]
+              raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
+            end
           end
         end
       else

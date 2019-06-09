@@ -58,10 +58,16 @@ class YellowDaystarTest < Minitest::Test
         ],
         "id": "http://example.edu/credentials/3732",
         "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
-        "credentialSchema": {
-          "id": "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
-          "type": "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
-        },
+        "credentialSchema": [
+          {
+            "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
+            "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+          },
+          {
+            "id" => "https://example.org/examples/degree.json",
+            "type" => "JsonSchemaValidator2018"
+          }
+        ],
         "issuer": "https://greymatter.edu/issuers/14",
         "issuanceDate": "2010-01-01T19:23:24Z",
         "credentialSubject": {
@@ -329,7 +335,9 @@ class YellowDaystarTest < Minitest::Test
 
   def test_verifiable_credential_zkp_missing_credential_schema_id
     credential = sample_credential
-    credential["credentialSchema"].delete("id")
+    credential["credentialSchema"] = {
+      "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+    }
 
     e = assert_raises  VerifiableCredentialParseError do
       @vc.consume(credential)
@@ -339,7 +347,9 @@ class YellowDaystarTest < Minitest::Test
 
   def test_verifiable_credential_zkp_missing_credential_schema_type
     credential = sample_credential
-    credential["credentialSchema"].delete("type")
+    credential["credentialSchema"] = {
+      "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o"
+    }
 
     e = assert_raises  VerifiableCredentialParseError do
       @vc.consume(credential)
