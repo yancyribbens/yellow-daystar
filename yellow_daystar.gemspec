@@ -7,4 +7,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'json-ld'
   s.add_development_dependency 'jwt'
   s.add_development_dependency 'rbnacl'
+  s.add_development_dependency 'merkle-hash-tree'
 end
