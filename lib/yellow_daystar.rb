@@ -77,18 +77,18 @@ module YellowDaystar
       public_key = private_key.verify_key
       token = JWT.encode credential, private_key, 'ED25519'
       proof = {
-        "type": "ED25519",
-        "created": "2017-06-18T21:19:10Z",
-        "proofPurpose": "assertionMethod",
-        "public_key": public_key.to_s,
-        "jws": token
+        "type" => "ED25519",
+        "created" => "2017-06-18T21:19:10Z",
+        "proofPurpose" => "assertionMethod",
+        "public_key" => public_key.to_s,
+        "jws" => token
       }
       credential.merge("proof" => proof)
     end
 
     def verify(proof, key)
-      jws = proof[:jws] 
-      pub_key = proof[:public_key]
+      jws = proof["jws"]
+      pub_key = proof["public_key"]
       private_key = RbNaCl::Signatures::Ed25519::SigningKey.new(key)
       raise 'invalid pub key' if pub_key != private_key.verify_key.to_s
       JWT.decode jws, private_key.verify_key, true, { algorithm: 'ED25519' }
@@ -175,6 +175,30 @@ module YellowDaystar
         end
       end
       if proof = credential["proof"]
+
+        # if this is a ZKP which is of type AnonCredV1 then credentialSchema is required
+        if proof["type"] == "AnonCredv1"
+          if credential_schema = credential["credentialSchema"]
+            if credential_schema.kind_of?(Array)
+              credential_schema.each do |item|
+                ["id", "type"].each do |property|
+                  unless item[property]
+                    raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
+                  end
+                end
+              end
+            else
+              ["id", "type"].each do |property|
+                unless credential_schema[property]
+                  raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
+                end
+              end
+            end
+          else
+            raise VerifiableCredentialParseError.new("Missing credentialSchema")
+          end
+        end
+
         unless proof["type"]
           raise VerifiableCredentialParseError.new(
             "Missing proof type"
@@ -182,25 +206,6 @@ module YellowDaystar
         end
       else
         raise VerifiableCredentialParseError.new("Missing proof")
-      end
-      if credential_schema = credential["credentialSchema"]
-        if credential_schema.kind_of?(Array)
-          credential_schema.each do |item|
-            ["id", "type"].each do |property|
-              unless item[property]
-                raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
-              end
-            end
-          end
-        else
-          ["id", "type"].each do |property|
-            unless credential_schema[property]
-              raise VerifiableCredentialParseError.new("Missing credentialSchema #{property}")
-            end
-          end
-        end
-      else
-        raise VerifiableCredentialParseError.new("Missing credentialSchema")
       end
     end
 

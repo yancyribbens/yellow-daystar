@@ -20,76 +20,96 @@ class YellowDaystarTest < Minitest::Test
   def sample_presentation
     deep_transform_keys(
       {
-        "@context": [
+        "@context" => [
           "https://www.w3.org/2018/credentials/v1",
           "https://www.w3.org/2018/credentials/examples/v1"
         ],
-        "id": "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
-        "type": ["VerifiablePresentation", "CredentialManagerPresentation"],
-        "verifiableCredential": [{
-          "id": "http://example.edu/credentials/3732",
-          "type": ["VerifiableCredential", "UniversityDegreeCredential"],
-          "issuer": "https://example.edu/issuers/14",
-          "issuanceDate": "2010-01-01T19:23:24Z",
-          "credentialSubject": {
-            "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-            "degree": {
-              "type": "BachelorDegree",
-              "name": "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>"
+        "id" => "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
+        "type" => ["VerifiablePresentation", "CredentialManagerPresentation"],
+        "verifiableCredential" => [{
+          "id" => "http://example.edu/credentials/3732",
+          "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
+          "issuer" => "https://example.edu/issuers/14",
+          "issuanceDate" => "2010-01-01T19:23:24Z",
+          "credentialSubject" => {
+            "id" => "did:example:ebfeb1f712ebc6f1c276e12ec21",
+            "degree" => {
+              "type" => "BachelorDegree",
+              "name" => "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>"
             }
           },
-          "proof": [{
-            "type": "example"
+          "proof" => [{
+            "type" => "example"
           }]
         }],
-        "proof": [{
-          "type": "example"
+        "proof" => [{
+          "type" => "example"
         }]
       }
     )
   end
 
-  def sample_credential
-    deep_transform_keys(
-      {
-        "@context": [
-          BASE_CONTEXT,
-         "https://www.utopiaplanitiafleet.net"
-        ],
-        "id": "http://example.edu/credentials/3732",
-        "type": [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
-        "credentialSchema": [
-          {
-            "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
-            "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
-          },
-          {
-            "id" => "https://example.org/examples/degree.json",
-            "type" => "JsonSchemaValidator2018"
-          }
-        ],
-        "issuer": "https://greymatter.edu/issuers/14",
-        "issuanceDate": "2010-01-01T19:23:24Z",
-        "credentialSubject": {
-          "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-          "degree": {
-            "type": "UpgradeYourGreyMatter",
-            "name": "Because someday it may matter"
-          }
-        },
-        "credentialStatus": {
-          "id": "https://example.edu/status/24",
-          "type": "CredentialStatusList2017"
-        },
-        "proof": {
-          "type": "RsaSignature2018",
-          "created": "2017-06-18T21:19:10Z",
-          "proofPurpose": "assertionMethod",
-          "verificationMethod": "https://example.com/jdoe/keys/1",
-          "jws": "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yA"
+  def sample_zkp
+    {
+      "@context" => [
+        BASE_CONTEXT,
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
+      "credentialSchema" => {
+        "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
+        "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+      },
+      "issuer" => "did:example:Wz4eUg7SetGfaUVCn8U9d62oDYrUJLuUtcy619",
+      "issuanceDate" => "2010-01-01T19:23:24Z",
+      "credentialSubject" => {
+        "givenName" => "Jane",
+        "familyName" => "Doe",
+        "degree" => {
+          "type" => "BachelorDegree",
+          "name" => "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>",
+          "college" => "College of Engineering"
         }
+      },
+      "proof" => {
+        "type" => "AnonCredv1",
+        "issuerData" => "5NQ4TgzNfSQxoLzf2d5AV3JNiCdMaTgm...BXiX5UggB381QU7ZCgqWivUmy4D",
+        "attributes" => "pPYmqDvwwWBDPNykXVrBtKdsJDeZUGFA...tTERiLqsZ5oxCoCSodPQaggkDJy",
+        "signature" => "8eGWSiTiWtEA8WnBwX4T259STpxpRKuk...kpFnikqqSP3GMW7mVxC4chxFhVs",
+        "signatureCorrectnessProof" => "SNQbW3u1QV5q89qhxA1xyVqFa6jCrKwv...dsRypyuGGK3RhhBUvH1tPEL8orH"
       }
-    )
+    }
+  end
+
+  def sample_credential
+    {
+      "@context" => [
+        BASE_CONTEXT,
+       "https://www.utopiaplanitiafleet.net"
+      ],
+      "id" => "http://example.edu/credentials/3732",
+      "type" => [VERIFIABLE_CREDENTIAL_TYPE, "CertifiablyCertifiable"],
+      "issuer" => "https://greymatter.edu/issuers/14",
+      "issuanceDate" => "2010-01-01T19:23:24Z",
+      "credentialSubject" => {
+        "id" => "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "degree" => {
+          "type" => "UpgradeYourGreyMatter",
+          "name" => "Because someday it may matter"
+        }
+      },
+      "credentialStatus" => {
+        "id" => "https://example.edu/status/24",
+        "type" => "CredentialStatusList2017"
+      },
+      "proof" => {
+        "type" => "RsaSignature2018",
+        "created" => "2017-06-18T21:19:10Z",
+        "proofPurpose" => "assertionMethod",
+        "verificationMethod" => "https://example.com/jdoe/keys/1",
+        "jws" => "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yA"
+      }
+    }
   end
 	
   def sample_signed_credential
@@ -97,13 +117,13 @@ class YellowDaystarTest < Minitest::Test
     credential = sample_credential
     token = File.read('token')
     proof = {
-      "type": "ED25519",
-      "created": "2017-06-18T21:19:10Z",
-      "proofPurpose": "assertionMethod",
-      "public_key": private_key.verify_key.to_s,
+      "type" => "ED25519",
+      "created" => "2017-06-18T21:19:10Z",
+      "proofPurpose" => "assertionMethod",
+      "public_key" => private_key.verify_key.to_s,
       #TODO
-      #"public_key": "\xF7\x13\x14\xA0\xA7 7!\xC4\x85obAQ\xEB\xAED\x90\x97\xFF(\x110\xC76\xE5\xDF<\xF5\xA1Kr",
-      "jws": token
+      #"public_key" => "\xF7\x13\x14\xA0\xA7 7!\xC4\x85obAQ\xEB\xAED\x90\x97\xFF(\x110\xC76\xE5\xDF<\xF5\xA1Kr",
+      "jws" => token
     }
     credential["proof"] = proof
     credential
@@ -125,6 +145,9 @@ class YellowDaystarTest < Minitest::Test
   def test_verifiable_credential_not_mangled
     consumed_credential = @vc.consume(sample_credential)
     assert_equal consumed_credential, sample_credential
+
+    consumed_zkp = @vc.consume(sample_zkp)
+    assert_equal consumed_zkp, sample_zkp
   end
 
   def test_verifiable_presentation_not_mangled
@@ -324,7 +347,7 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema
-    credential = sample_credential
+    credential = sample_zkp
     credential.delete("credentialSchema")
 
     e = assert_raises  VerifiableCredentialParseError do
@@ -334,7 +357,7 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_id
-    credential = sample_credential
+    credential = sample_zkp
     credential["credentialSchema"] = {
       "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
     }
@@ -346,7 +369,7 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_type
-    credential = sample_credential
+    credential = sample_zkp
     credential["credentialSchema"] = {
       "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o"
     }
@@ -355,6 +378,22 @@ class YellowDaystarTest < Minitest::Test
       @vc.consume(credential)
     end
     assert_equal e.message, "Missing credentialSchema type"
+  end
+
+  def test_valid_zkp_raises_nothing
+    credential = sample_zkp
+    @vc.consume(credential)
+  end
+
+  def test_verifiable_credential_signature_requires_credential_schema
+    credential = sample_zkp
+    credential.delete("credentialSchema")
+
+    e = assert_raises  VerifiableCredentialParseError do
+      @vc.consume(credential)
+    end
+
+    assert_equal e.message, "Missing credentialSchema"
   end
 
   def test_attach_proof
