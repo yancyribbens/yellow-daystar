@@ -1,5 +1,5 @@
 # Omicron-Omicron-Alpha-Yellow-Daystar-2-7 (yellow-daystar for short)
-Ruby gem which implements verifiable credential data model spec
+Verifier for Verifiable Credentials Data Model in Ruby
 
 ## Example
 
@@ -19,13 +19,7 @@ Ruby gem which implements verifiable credential data model spec
   )
 ```
 
-4. produce a credential:
-
-```
-vc.produce(context: nil, id: nil, type: nil, credential_subject: nil, proof: nil)
-```
-
-5. consume a credential:
+5. verify a credential:
 
 ```
 require 'open-uri'
