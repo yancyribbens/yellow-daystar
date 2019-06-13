@@ -137,7 +137,7 @@ module YellowDaystar
         )
       end
       if issuer = credential["issuer"]
-        unless issuer =~ URI::regexp
+        unless issuer =~ URI::DEFAULT_PARSER.make_regexp
           raise VerifiableCredentialParseError.new("Malformed issuer: bad URI: #{issuer}")
         end
       else credential["issuer"]
