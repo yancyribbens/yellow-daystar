@@ -177,7 +177,7 @@ module YellowDaystar
       if proof = credential["proof"]
 
         # if this is a ZKP which is of type AnonCredV1 then credentialSchema is required
-        if proof["type"] == "AnonCredv1"
+        if proof["type"] == "AnonCredv1" || proof["type"] == "CLSignature2019"
           if credential_schema = credential["credentialSchema"]
             if credential_schema.kind_of?(Array)
               credential_schema.each do |item|

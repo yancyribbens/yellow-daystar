@@ -39,13 +39,24 @@ class YellowDaystarTest < Minitest::Test
     }
   end
 
+
   def sample_zkp_cl_signature
     {
       "@context" => [
-        BASE_CONTEXT,
+        "https://raw.githubusercontent.com/w3c/vc-data-model/24cf5e97e1a41786e9e4dbfa4f9f264c4c41e537/contexts/credentials/v1",
         "https://www.w3.org/2018/credentials/examples/v1"
       ],
       "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
+      "credentialSchema" => [
+        {
+          "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o",
+          "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+        },
+        {
+          "id" => "https://example.org/examples/degree.json",
+          "type" => "JsonSchemaValidator2018"
+        }
+      ],
       "issuer" => "did:example:Wz4eUg7SetGfaUVCn8U9d62oDYrUJLuUtcy619",
       "issuanceDate" => "2010-01-01T19:23:24Z",
       "credentialSubject" => {
@@ -364,54 +375,40 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema
-    credential = sample_zkp_anon_cred
-    credential.delete("credentialSchema")
+    [sample_zkp_anon_cred , sample_zkp_cl_signature].each do |credential|
+      credential.delete("credentialSchema")
 
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
+      e = assert_raises  VerifiableCredentialParseError do
+        @vc.consume(credential)
+      end
+      assert_equal e.message, "Missing credentialSchema"
     end
-    assert_equal e.message, "Missing credentialSchema"
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_id
-    credential = sample_zkp_anon_cred
-    credential["credentialSchema"] = {
-      "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
-    }
+    [sample_zkp_anon_cred , sample_zkp_cl_signature].each do |credential|
+      credential["credentialSchema"] = {
+        "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
+      }
 
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
+      e = assert_raises  VerifiableCredentialParseError do
+        @vc.consume(credential)
+      end
+      assert_equal e.message, "Missing credentialSchema id"
     end
-    assert_equal e.message, "Missing credentialSchema id"
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_type
-    credential = sample_zkp_anon_cred
+    [sample_zkp_anon_cred , sample_zkp_cl_signature].each do |credential|
+      credential["credentialSchema"] = {
+        "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o"
+      }
 
-    credential["credentialSchema"] = {
-      "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o"
-    }
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
+      e = assert_raises  VerifiableCredentialParseError do
+        @vc.consume(credential)
+      end
+      assert_equal e.message, "Missing credentialSchema type"
     end
-    assert_equal e.message, "Missing credentialSchema type"
-  end
-
-  def test_valid_zkp_raises_nothing
-    credential = sample_zkp_anon_cred
-    @vc.consume(credential)
-  end
-
-  def test_verifiable_credential_signature_requires_credential_schema
-    credential = sample_zkp_anon_cred
-    credential.delete("credentialSchema")
-
-    e = assert_raises  VerifiableCredentialParseError do
-      @vc.consume(credential)
-    end
-
-    assert_equal e.message, "Missing credentialSchema"
   end
 
   def test_attach_proof
