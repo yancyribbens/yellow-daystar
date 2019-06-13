@@ -148,7 +148,7 @@ module YellowDaystar
       if issue_date = credential["issuanceDate"]
         begin
           Time.iso8601(issue_date)
-        rescue ArgumentError => e
+        rescue ArgumentError
           raise VerifiableCredentialParseError.new(
             "invalid date: #{issue_date}"
           )
@@ -159,7 +159,7 @@ module YellowDaystar
       if expiration_date = credential["expirationDate"]
         begin
           Time.iso8601(expiration_date)
-        rescue ArgumentError => e
+        rescue ArgumentError
           raise VerifiableCredentialParseError.new(
             "invalid date: #{expiration_date}"
           )

@@ -138,7 +138,7 @@ class YellowDaystarTest < Minitest::Test
   def test_empty
     data = {}
     assert_raises do
-      out = @vc.consume(data)
+      @vc.consume(data)
     end
   end
 
