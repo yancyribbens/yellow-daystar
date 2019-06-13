@@ -9,47 +9,65 @@ class YellowDaystarTest < Minitest::Test
   BASE_CONTEXT = "https://www.w3.org/2018/credentials/v1"
   VERIFIABLE_CREDENTIAL_TYPE = "VerifiableCredential"
 
-  def deep_transform_keys(hash)
-    result = {}
-    hash.each do |key, value|
-      result[key.to_s] = value.is_a?(Hash) ? deep_transform_keys(value) : value
-    end
-    result
-  end
-
   def sample_presentation
-    deep_transform_keys(
-      {
-        "@context" => [
-          "https://www.w3.org/2018/credentials/v1",
-          "https://www.w3.org/2018/credentials/examples/v1"
-        ],
-        "id" => "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
-        "type" => ["VerifiablePresentation", "CredentialManagerPresentation"],
-        "verifiableCredential" => [{
-          "id" => "http://example.edu/credentials/3732",
-          "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
-          "issuer" => "https://example.edu/issuers/14",
-          "issuanceDate" => "2010-01-01T19:23:24Z",
-          "credentialSubject" => {
-            "id" => "did:example:ebfeb1f712ebc6f1c276e12ec21",
-            "degree" => {
-              "type" => "BachelorDegree",
-              "name" => "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>"
-            }
-          },
-          "proof" => [{
-            "type" => "example"
-          }]
-        }],
+    {
+      "@context" => [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "id" => "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
+      "type" => ["VerifiablePresentation", "CredentialManagerPresentation"],
+      "verifiableCredential" => [{
+        "id" => "http://example.edu/credentials/3732",
+        "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
+        "issuer" => "https://example.edu/issuers/14",
+        "issuanceDate" => "2010-01-01T19:23:24Z",
+        "credentialSubject" => {
+          "id" => "did:example:ebfeb1f712ebc6f1c276e12ec21",
+          "degree" => {
+            "type" => "BachelorDegree",
+            "name" => "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>"
+          }
+        },
         "proof" => [{
           "type" => "example"
         }]
-      }
-    )
+      }],
+      "proof" => [{
+        "type" => "example"
+      }]
+    }
   end
 
-  def sample_zkp
+  def sample_zkp_cl_signature
+    {
+      "@context" => [
+        BASE_CONTEXT,
+        "https://www.w3.org/2018/credentials/examples/v1"
+      ],
+      "type" => ["VerifiableCredential", "UniversityDegreeCredential"],
+      "issuer" => "did:example:Wz4eUg7SetGfaUVCn8U9d62oDYrUJLuUtcy619",
+      "issuanceDate" => "2010-01-01T19:23:24Z",
+      "credentialSubject" => {
+        "givenName" => "Jane",
+        "familyName" => "Doe",
+        "degree" => {
+          "type" => "BachelorDegree",
+          "name" => "<span lang='fr-CA'>Baccalauréat en musiques numériques</span>",
+          "college" => "College of Engineering"
+        }
+      },
+      "proof" => {
+        "type" => "CLSignature2019",
+        "issuerData" => "5NQ4TgzNfSQxoLzf2d5AV3JNiCdMaTgm...BXiX5UggB381QU7ZCgqWivUmy4D",
+        "attributes" => "pPYmqDvwwWBDPNykXVrBtKdsJDeZUGFA...tTERiLqsZ5oxCoCSodPQaggkDJy",
+        "signature" => "8eGWSiTiWtEA8WnBwX4T259STpxpRKuk...kpFnikqqSP3GMW7mVxC4chxFhVs",
+        "signatureCorrectnessProof" => "SNQbW3u1QV5q89qhxA1xyVqFa6jCrKwv...dsRypyuGGK3RhhBUvH1tPEL8orH"
+      }
+    }
+  end
+
+  def sample_zkp_anon_cred
     {
       "@context" => [
         BASE_CONTEXT,
@@ -143,11 +161,10 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_not_mangled
-    consumed_credential = @vc.consume(sample_credential)
-    assert_equal consumed_credential, sample_credential
-
-    consumed_zkp = @vc.consume(sample_zkp)
-    assert_equal consumed_zkp, sample_zkp
+    [sample_credential, sample_zkp_anon_cred, sample_zkp_cl_signature].each do |credential|
+      consumed_credential = @vc.consume(credential)
+      assert_equal consumed_credential, credential
+    end
   end
 
   def test_verifiable_presentation_not_mangled
@@ -347,7 +364,7 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema
-    credential = sample_zkp
+    credential = sample_zkp_anon_cred
     credential.delete("credentialSchema")
 
     e = assert_raises  VerifiableCredentialParseError do
@@ -357,7 +374,7 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_id
-    credential = sample_zkp
+    credential = sample_zkp_anon_cred
     credential["credentialSchema"] = {
       "type" => "did:example:schema:22KpkXgecryx9k7N6XN1QoN3gXwBkSU8SfyyYQG"
     }
@@ -369,7 +386,8 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_verifiable_credential_zkp_missing_credential_schema_type
-    credential = sample_zkp
+    credential = sample_zkp_anon_cred
+
     credential["credentialSchema"] = {
       "id" => "did:example:cdf:35LB7w9ueWbagPL94T9bMLtyXDj9pX5o"
     }
@@ -381,12 +399,12 @@ class YellowDaystarTest < Minitest::Test
   end
 
   def test_valid_zkp_raises_nothing
-    credential = sample_zkp
+    credential = sample_zkp_anon_cred
     @vc.consume(credential)
   end
 
   def test_verifiable_credential_signature_requires_credential_schema
-    credential = sample_zkp
+    credential = sample_zkp_anon_cred
     credential.delete("credentialSchema")
 
     e = assert_raises  VerifiableCredentialParseError do
