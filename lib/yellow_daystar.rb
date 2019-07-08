@@ -148,7 +148,7 @@ module YellowDaystar
       if issue_date = credential["issuanceDate"]
         begin
           Time.iso8601(issue_date)
-        rescue ArgumentError => e
+        rescue ArgumentError
           raise VerifiableCredentialParseError.new(
             "invalid date: #{issue_date}"
           )
@@ -159,7 +159,7 @@ module YellowDaystar
       if expiration_date = credential["expirationDate"]
         begin
           Time.iso8601(expiration_date)
-        rescue ArgumentError => e
+        rescue ArgumentError
           raise VerifiableCredentialParseError.new(
             "invalid date: #{expiration_date}"
           )
@@ -177,7 +177,7 @@ module YellowDaystar
       if proof = credential["proof"]
 
         # if this is a ZKP which is of type AnonCredV1 then credentialSchema is required
-        if proof["type"] == "AnonCredv1"
+        if proof["type"] == "AnonCredv1" || proof["type"] == "CLSignature2019"
           if credential_schema = credential["credentialSchema"]
             if credential_schema.kind_of?(Array)
               credential_schema.each do |item|
